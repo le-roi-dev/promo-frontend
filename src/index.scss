@@ -1,0 +1,616 @@
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css');
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/fontawesome.min.css');
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css');
+
+
+table {
+  min-width: 100%;
+  border-collapse: collapse;
+  border: 1px #3e3e3e solid;
+  border-radius: 14px;
+}
+
+th {
+  border-bottom: 1px #3e3e3e solid;
+  border-left: 1px #3e3e3e solid;
+  border-right: 1px #3e3e3e solid;
+  white-space: nowrap;
+
+  @apply py-1 font-normal text-gray-600;
+
+}
+
+
+td {
+  border-top: 0;
+  border-bottom: 0;
+  border-left: 1px #3e3e3e solid;
+  border-right: 1px #3e3e3e solid;
+  background: #FFF;
+  @apply py-2 text-gray-700;
+
+}
+
+
+tr {
+  min-width: 100%;
+}
+
+.input-text-container {
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding-right: 10px;
+  margin-right: 10px;
+}
+
+@media screen and (max-width: 640px) {
+  .left-sidebar {
+    width: 4.5rem;
+    min-width: 4.5rem;
+  }
+}
+
+iframe,
+object,
+embed {
+  max-width: 100%;
+}
+
+.form-container {
+  padding-right: 20px;
+}
+
+@media screen and (max-width: 767px) {
+  .form-container {
+    max-width: 90%;
+  }
+
+}
+
+@media screen and (max-width: 576px) {
+  .form-container {
+    max-width: 93%;
+  }
+
+}
+
+@media screen and (max-width: 480px) {
+  .form-container {
+    max-width: 97%;
+  }
+}
+.asdf {
+  box-shadow: 20px 20px;
+}
+.header {
+  position: relative;
+  z-index: 20;
+  font-family: "Roboto";
+  // background: rgb(67, 68, 68);
+  // background: linear-gradient(90deg, rgba(67,68,68,1) 0%, rgba(32,127,138,1) 63%, rgba(31,128,140,1) 64%, rgba(1,180,201,1) 100%);
+  //loi change
+  // background: linear-gradient(90deg, rgba(67,68,68,1) 0%, rgba(32,127,138,1) 63%, rgba(31,128,140,1) 64%, rgba(1,180,201,1) 100%);
+  // background: linear-gradient(90deg, #5190AA, #257495);
+  //finnish change
+  /* -webkit-box-shadow: -8px 3px 25px 1px rgba(0,0,0,0.75);
+    -moz-box-shadow: -8px 3px 25px 1px rgba(0,0,0,0.75); */
+  //loi change
+  // box-shadow: 0px 5px 10px 1px rgb(11, 47, 51); 
+  // box-shadow: 0px 5px 10px 1px rgb(184, 184, 184);
+  //finnish change 
+  // box-shadow: 0px 5px 0 0 rgb(20, 59, 65);
+  // box-shadow: inset 0px -5px 0 0 rgb(20, 59, 65),inset 0px -5px 0 0 rgb(26, 90, 99) ,inset 0px -5px 0 0 rgb(8, 192, 216) 
+}
+
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(178, 177, 177, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+}
+
+.loading-spinner {
+  border: 4px solid #ffffff;
+  border-top: 4px solid #278283;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 0.8s linear infinite;
+}
+
+.alert-check {
+  font-family: "Font Awesome 6 Free";
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.thumbsUp-radio {
+  display: none;
+}
+
+.thumbsUp {
+  display: inline-block;
+  font-size: 3em;
+  color: #135270;
+}
+
+.thumbsUp-label .thumbsUp:before {
+  content: "\f164";
+  font-family: "Font Awesome 6 Free";
+  color: #135270;
+}
+
+.thumbsUp-radio:checked+.thumbsUp:before {
+  color: #135270;
+  border-radius: 50%;
+  font-weight: bold;
+}
+
+/** thumbs down*/
+.thumbsDown-radio {
+  display: none;
+}
+
+.thumbsDown {
+  display: inline-block;
+  font-size: 3em;
+  color: #b42121;
+  margin-top: 7px;
+}
+
+.thumbsDown-label .thumbsDown:before {
+  content: "\f165";
+  font-family: "Font Awesome 6 Free";
+  color: #b42121;
+}
+
+.thumbsDown-radio:checked+.thumbsDown:before {
+  color: #b42121;
+  border-radius: 50%;
+  font-weight: bold;
+}
+
+@media screen and (max-width: 380px) {
+  .mobile-responsive-parts {
+    flex-direction: column;
+  }
+}
+
+.myform-body {
+  box-shadow: 0px 0px 10px 0px rgba(22, 22, 22, 0.33);
+}
+
+.main-body {
+  margin: 0;
+  padding: 0;
+}
+
+.first-loading-logo {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+html,
+body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: rgb(229 231 235);
+  @apply bg-gray-200;
+}
+
+
+.scrollable {
+  width: 100%;
+  overflow-x: auto;
+  display: block;
+}
+
+// .close-btn {
+//   content: "";
+// }
+.close-btn {
+  display: inline-block;
+  font-size: 3em;
+  color: #135270;
+}
+
+.close-btn:before {
+  content: "\f00d";
+  font-family: "Font Awesome 6 Free";
+  color: #135270;
+}
+
+/** new css for modal and pop up */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: black;
+  opacity: 0.5;
+  z-index: 10;
+  /* Make sure the overlay is above the modal */
+}
+
+.modal {
+  position: relative;
+  z-index: 20;
+  /* Make sure the modal is above the overlay */
+  background-color: white;
+  padding: 2rem;
+  border-radius: 0.5rem;
+  margin: 10px;
+}
+
+.sm-large-text {
+  word-break: break-all;
+  width: 50%;
+  flex: 1;
+}
+
+@media screen and (max-width: 600px) {
+  .mobile-modal {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
+
+.edit-modal {
+  padding-top: 0px;
+  padding-left: 0px;
+  border-radius: .25rem;
+  max-height: 600px;
+  padding-bottom: 0px;
+}
+
+.form-radio-custom {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  display: inline-block;
+  position: relative;
+  background-color: #fff;
+  color: #718096;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.25rem;
+  transition: all 0.2s ease-in-out;
+  width: 1.4rem;
+  height: 1.4rem;
+  margin-right: 0.5rem;
+  cursor: pointer;
+}
+
+.form-radio-custom::before {
+  content: "";
+  display: block;
+  position: absolute;
+  top: 0.15rem;
+  left: 0.15rem;
+  width: 1.1rem;
+  height: 1.1rem;
+  border-radius: 0.25rem;
+  transition: all 0.2s ease-in-out;
+  width: 1.1rem;
+  /* add this line to make them the same width */
+}
+
+.form-radio-custom:checked {
+  background-color: #fff;
+  border-color: transparent;
+  color: #fff;
+}
+
+.form-radio-custom:checked::before {
+  background-color: #0EA292;
+  border-color: #0EA292;
+
+}
+
+@media screen and (max-width: 640px) {
+  .second-element {
+    margin-left: -15px;
+  }
+
+  .photo-section {
+    max-width: 200px;
+  }
+}
+
+@media screen and (max-width: 800px) {
+  .table-block-container {
+    flex-direction: column;
+  }
+
+  .second-table {
+    margin-top: 16px;
+    ;
+  }
+}
+
+@media screen and (max-width: 500px) {
+  .content-section {
+    flex-direction: column;
+  }
+
+  .photo-section {
+    min-width: 250px;
+    width: 100%;
+  }
+}
+
+@media screen and (min-width: 768px) and (max-width: 910px) {
+  .mobile-responsive-parts {
+    flex-direction: column;
+  }
+
+  .photo-content {
+    width: 100%;
+  }
+}
+
+@media screen and (min-width: 500px) and (max-width: 994px) {
+  .semaforo-check {
+    flex-direction: column;
+  }
+}
+
+.truncate {
+  max-width: 100px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  margin-top: -10px;
+  margin-bottom: 10px;
+}
+
+
+.file-input {
+  /* Hide the text by setting its color to transparent */
+  color: transparent;
+}
+
+.file-input::-webkit-file-upload-button {
+  /* Style the button */
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+  font-size: 14px;
+  font-weight: normal;
+  color: #3e3e3e;
+  cursor: pointer;
+}
+
+/* Show the button when the file input field is focused */
+.file-input:focus::-webkit-file-upload-button {
+  outline: none;
+  box-shadow: 0 0 3px 3px #d0d0d0;
+}
+
+
+/** edit modal with product edit */
+@media screen and (max-width: 500px) {
+  .mobile-edit-modal {
+    flex-direction: column;
+  }
+
+  .sm-img-div {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding-top: 15px;
+  }
+
+  .sm-scroll-block {
+    height: 65vh;
+  }
+
+  .sm-edit-modal {
+    max-height: unset;
+  }
+}
+
+@media screen and (max-width: 410px) {
+  .modal {
+    padding-right: 10px;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .sm-photo-upload {
+    flex-wrap: wrap;
+  }
+
+  .edit-modal {
+    height: 93vh;
+    max-height: unset;
+
+  }
+
+  .sm-scroll-block {
+    height: 75vh;
+  }
+}
+
+.edit-modal-inside {
+  height: 90vh;
+  overflow-y: auto;
+  margin-bottom: 30px;
+
+  .edit-product-footer {
+    margin-bottom: 30px;
+  }
+
+
+
+}
+
+.sticky-col {
+  position: sticky;
+  background-color: #fff;
+  z-index: 1001;
+  border-right: 1px solid #e0e0e0;
+}
+
+.sticky-col-0 {
+  left: 0;
+}
+
+.sticky-col-1 {
+  left: 150px;
+}
+
+.sticky-col-2 {
+  left: 250px;
+}
+
+.sticky-col-3 {
+  left: 380px;
+}
+
+.sticky-col-4 {
+  left: 530px;
+}
+
+.sticky-col-5 {
+  left: 650px;
+}
+
+.sticky-col-6 {
+  left: 800px;
+}
+
+.sticky-col-7 {
+  left: 930px;
+}
+
+
+// .custom-data-grid .MuiDataGrid-columnsContainer {
+//   background-color: lightblue;
+//   /* Change background color here */
+// }
+
+// .custom-data-grid .MuiDataGrid-colCell {
+//   background-color: lightblue;
+//   /* Change background color of each column cell */ 
+// }
+
+.custom-data-grid .css-yrdy0g-MuiDataGrid-columnHeaderRow {
+  color: white !important;
+  background-color: #6A93D0 !important;
+}
+
+.custom-ag-grid .ag-header {
+  color: white !important;
+  background-color: #6A93D0 !important;
+}
+
+.greenCell {
+  background-color: #d8f2cf !important;
+  color: #0BA452 !important
+}
+
+.pinkCell {
+  background-color: #f2cef2 !important;
+  color: #B64AB0 !important
+}
+
+.loading-bar {
+  width: 60px !important;
+  height: 60px !important;
+}
+
+// .MuiDataGrid-cell {
+//   max-height: 100px !important;
+// }
+
+// .MuiDataGrid-row {
+//   max-height: 100px !important;
+// }
+// .MuiDataGrid-columnHeaderTitle {
+//   white-space: normal !important;
+//   overflow: visible !important;
+//   text-overflow: clip !important;
+// }
+.ag-header-cell-text {
+  color: white !important;
+}
+
+.request-state-title {
+  color: white !important;
+  background-color: #6A93D0 !important;
+  font-size: 30px !important;
+  font-weight: bold !important;
+  padding: 10px 20px !important;
+}
+
+.css-1t1j96h-MuiPaper-root-MuiDialog-paper {
+  border-radius: 10px !important;
+}
+
+.success-update {
+  font-weight: bold;
+  color: #0BA452;
+}
+
+
+
+::-webkit-scrollbar {
+  width: 12px;
+  /* width for vertical scrollbar */
+  height: 12px;
+  /* height for horizontal scrollbar */
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+/* Track on hover */
+::-webkit-scrollbar-track:hover {
+  background: #d4d4d4;
+}
+
+/* Handle (thumb) */
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 6px;
+  /* roundness of the scrollbar thumb */
+}
+
+/* Handle (thumb) on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Corner where the two scrollbars meet */
+::-webkit-scrollbar-corner {
+  background: #f1f1f1;
+}
