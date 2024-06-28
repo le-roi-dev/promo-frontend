@@ -1,26 +1,40 @@
-import React, { useEffect, useCallback, useState, useRef } from "react";
+import React, {
+  useEffect,
+  useCallback,
+  useState,
+  useRef,
+  useMemo,
+} from "react";
 import { LoadingSpinner } from "./components/LoadingSpinner";
 import "./index.scss";
 import axios from "./connection/axios";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
 import siteLogo from "./assets/site_logo.png";
 import { AgGridReact } from "ag-grid-react"; // AG Grid Component
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-quartz.css";
-import { Button } from "@mui/material";
-import InputLabel from "@mui/material/InputLabel";
-import FormControl from "@mui/material/FormControl";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import TextField from "@mui/material/TextField";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
-import TextField from "@mui/material/TextField";
-import { Link, useNavigate } from "react-router-dom";
-import Datepicker from "react-tailwindcss-datepicker";
+import InputLabel from "@mui/material/InputLabel";
+import FormControl from "@mui/material/FormControl";
 import CustomizedProgressBars from './components/LoadingBar';
-function RequestPage({ userData, onLogoutClick, setPage }) {
+import { Button } from "@mui/material";
+import Datepicker from "react-tailwindcss-datepicker";
+import { Link } from "react-router-dom";
+import { DateRangePicker, Stack } from 'rsuite';
+
+function HistoryPage({ userData, onLogoutClick, setPage }) {
   const [isLoading, setIsLoading] = useState(false);
   const gridRef = useRef();
-  const ref = useRef(null);
+
   const [rowData, setRowData] = useState([]);
+  const [date, setDate] = useState(null);
+  const [color, setColor] = useState("blue");
+  const [families, setFamilies] = useState([]);
+  // Column Definitions: Defines the columns to be displayed.
   const getCellClassName = (params) => {
     const value = params.value;
 
@@ -31,8 +45,6 @@ function RequestPage({ userData, onLogoutClick, setPage }) {
       return 'pinkCell'; // Apply the class for red background
     }
   };
-
-  // Column Definitions: Defines the columns to be displayed.
   const [columns, setColumns] = useState([
     {
       headerName: "Imagen producto",
@@ -40,6 +52,7 @@ function RequestPage({ userData, onLogoutClick, setPage }) {
       renderCell: (params) => {
         console.log(params)
         return (
+
           <div className="flex justify-center w-full">
             <img
               src={`${params.row.imagen_producto}`}
@@ -52,6 +65,7 @@ function RequestPage({ userData, onLogoutClick, setPage }) {
       },
       width: 100,
     },
+
 
     { headerName: "Sku (DV)", field: "item_sku_num", width: 100 },
     { headerName: "Descripcion", field: "item_name", width: 170 },
@@ -97,7 +111,7 @@ function RequestPage({ userData, onLogoutClick, setPage }) {
     },
     {
       field: "costo",
-      headerName: "Costo",
+      headerName: "COSTO",
       width: 80,
       editable: false,
       renderCell: (params) => (
@@ -150,12 +164,16 @@ function RequestPage({ userData, onLogoutClick, setPage }) {
     {
       headerName: "ESTADO PRECIOS",
       field: "status",
-      width: 130,
-      renderCell: (params) => (
-        <div className="">
-          {params.value == 'PENDING' ? 'PENDIENTE' : null}
+      width: 170,
+      renderCell: params => (
+        <div style={{ whiteSpace: 'pre-wrap' }}>
+          <p className="break-all">
+            {
+              params.row.status == "APPROVED" ? "APROBADO PANGUI" : "PENDIENTE"
+            }
+          </p>
         </div>
-      )
+      ),
     },
     { headerName: "Familia", field: "familia", width: 170 },
     { headerName: "Grupo", field: "subfamilia", width: 130 },
@@ -226,19 +244,29 @@ function RequestPage({ userData, onLogoutClick, setPage }) {
     }
   }));
 
+  const [keyword, setKeyword] = useState("");
   const [skip, setSkip] = useState(0);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [family, setFamily] = useState("");
   const [applicant, setApplicant] = useState("");
   const [applicants, setApplicants] = useState([]);
-  const [family, setFamily] = useState("");
-  const [families, setFamilies] = useState([]);
+  const nowDate = new Date();
+  const [value, setValue] = useState({
+    startDate: new Date(nowDate.getFullYear(), 0, 1),
+    endDate: new Date(nowDate.getFullYear(), nowDate.getMonth(), nowDate.getDate() + 2),
+  });
 
-  const [keyword, setKeyword] = useState("");
+  const handleValueChange = (newValue) => {
+    console.log("newValue:", newValue);
+    setValue({
+      startDate: new Date(newValue.startDate),
+      endDate: new Date(newValue.endDate)
+    });
+  };
 
   useEffect(() => {
-    // gridRef.current.api.showLoadingOverlay();
-    getRequestData(skip, keyword);
-    // gridRef.current.api.hideOverlay();
-  }, [skip, keyword, family, applicant]);
+    refreshPage();
+  }, [skip, keyword, value, family, applicant]);
 
   const changePercentContent = (value) => {
     if (!value) return null;
@@ -253,12 +281,14 @@ function RequestPage({ userData, onLogoutClick, setPage }) {
     return newPercentage;
   }
 
-
-  const getRequestData = (skip, keyword) => {
+  const refreshPage = () => {
+    const startDate = value.startDate.toISOString().split('T')[0];
+    const endDate = value.endDate.toISOString().split('T')[0];
+    console.log(startDate, endDate);
     setIsLoading(true);
-    // gridRef.current.api.showLoadingOverlay();
+    // const endDate = value.endDate.toISOString().split('T')[0];
     axios
-      .get("api/request-data?skip=" + skip + "&keyword=" + keyword + "&family=" + family + "&applicant=" + applicant)
+      .get("api/history-data?skip=" + skip + "&keyword=" + keyword + "&start_date=" + startDate + "&end_date=" + endDate + "&email=" + userData.email + "&user_type=" + 2 + "&family=" + family + "&applicant=" + applicant)
       .then((data) => {
         const newRowData = data.response.data.map((row) => ({
           ...row,
@@ -272,76 +302,30 @@ function RequestPage({ userData, onLogoutClick, setPage }) {
           id: row.item_sku_num,
         }));
         if (skip == 0) {
+          // console.log(data.response.data);
+          // const filteredData = data.response.data.filter(
+          //   (item) =>
+          //     item.APROBADOS_PRICING !== "" && item.APROBADOS_PRICING !== null
+          // );
           setRowData(newRowData);
         } else {
-          const addedData = [...rowData, ...newRowData];
-          setRowData(addedData);
-        }
-        if (data.response.data.length == 10) {
-          setSkip(skip + 10);
+          const filteredData = [...rowData, ...newRowData];
+          // const filter = filteredData.filter(
+          //   item.APROBADOS_PRICING !== "" && item.APROBADOS_PRICING !== null
+          // );
+          setRowData(filteredData);
         }
         setFamilies(data.response.families)
         setApplicants(data.response.EMAILs)
-        // gridRef.current.api.hideOverlay();
+        if (data.response.data.length == 10) {
+          setSkip(skip + 10);
+        }
         setIsLoading(false);
       })
       .catch((err) => {
         console.log("Error while loading store data from google spreadsheet.");
       });
   }
-
-  const onImportClick = () => {
-    ref.current.click();
-  };
-
-  const onFileChange = (e) => {
-    e.preventDefault();
-    const form = new FormData();
-    form.append("file", ref.current.files[0]);
-    form.append("email", userData.email);
-    console.log("??????????????")
-    setIsLoading(true);
-    axios
-      .post("api/import-request", form, {
-        headers: {
-          "Content-Type": "multipart/form-errordata",
-        },
-      })
-      .then((data) => {
-        const approvedArray = data.approvedArray;
-        setRowData(rowData.filter(row => !approvedArray.find(sa =>
-          sa.SKU == row.item_sku_num &&
-          sa.tipo_promocion == row.tipo_promocion &&
-          sa.fecha_de_inicio == row.fecha_de_inicio &&
-          sa.fecha_de_termino == row.fecha_de_termino
-        )));
-        setIsLoading(false);
-      })
-      .catch((err) => {
-        console.log("Error while loading store data from google spreadsheet.");
-      });
-  };
-
-  const refreshComponent = () => {
-    // Increment the key to trigger a re-render and effectively refresh the component
-    // axios
-    // .get("api/promo-view-data")
-    // .then((data) => {
-    //   console.log("data->", data)
-    // })
-    // .catch(() => {
-    //   console.log("Error while loading store data from google spreadsheet.");
-    // });
-    window.location.reload();
-  };
-
-  const handleSelect1Change = (event) => {
-    setApplicant(event.target.value);
-  };
-
-  const handleSelect2Change = (event) => {
-    setFamily(event.target.value);
-  };
 
   const exportClick = useCallback(() => {
     gridRef.current.api.exportDataAsCsv();
@@ -382,6 +366,29 @@ function RequestPage({ userData, onLogoutClick, setPage }) {
     document.body.removeChild(link);
   };
 
+  const handleSelect1Change = (event) => {
+    setFamily(event.target.value);
+  };
+
+  const handleSelect2Change = (event) => {
+    setApplicant(event.target.value);
+  };
+
+  const onGridReady = useCallback((params) => {
+    fetch("https://www.ag-grid.com/example-assets/olympic-winners.json")
+      .then((resp) => resp.json())
+      .then((data) => setRowData(data));
+  }, []);
+
+  const defaultColDef = useMemo(() => {
+    return {
+      flex: 1,
+      minWidth: 150,
+      filter: "agTextColumnFilter",
+      menuTabs: ["filterMenuTab"],
+    };
+  }, []);
+
   return (
     <div className="main-body bg-gray-200 relative h-screen">
       <div className="main_body">
@@ -400,21 +407,21 @@ function RequestPage({ userData, onLogoutClick, setPage }) {
             </div>
           </div>
           <div className="flex items-center text-gray-500 text-sm justify-center gap-8">
-            <div className="border-b-4 border-[#0066FF] text-[#0066FF] flex flex-col gap-2 items-center">
-            <img src={"/telegram-promotion.png"} width={20} height={20} color="#0066FF" />
-            ENVÍO SOLICITUD
-            </div>
-            <Link to="/history" className="flex flex-col gap-2 items-center">
-              <img src={"/message.png"} width={20} height={20} />
-              SEGUIMIENTO SOLICITUDES
+            <Link to={userData.type == 1 ? "/promotion" : "/request"} className=" flex flex-col gap-2 items-center">
+              <img src={"/telegram.png"} width={20} height={20} />
+              ENVÍO SOLICITUD
             </Link>
+            <div className="border-b-4 border-[#0066FF] text-[#0066FF] flex flex-col gap-2 items-center">
+              <img src={"/message-request.png"} width={20} height={20} />
+              SEGUIMIENTO SOLICITUDES
+            </div>
           </div>
           <div className="relative">
             <div className="bg-[#0889ac] rounded-r-full text-white text-left py-3 px-2 mymd:px-4 header mt-1 mr-[10px] mymd:mr-[15px]">
               <div className="flex items-center justify-between mx-1 mymd:mx-[12px]">
                 <div className="text-section text-white pr-2">
                   <h2 className="font-bold mymd:text-lg text-sm">
-                  SOLICITUD DE PROMOCIONES Y PRECIOS
+                    APLICATIVO DE SOLICITUD DE PROMOCIONES
                   </h2>
                   <p className="font-light text-[12px] mymd:text-sm">
                     Realizado por Business Analytics - BI Chile
@@ -452,76 +459,82 @@ function RequestPage({ userData, onLogoutClick, setPage }) {
             </div>
           </div>
           <div className="bg-[#EFEFEF] w-full h-[22px] relative">
-            <div className="absolute h-[22px] left-0 bottom-0 w-[338px] bg-[#1964BC] rounded-r-full text-sm pl-8 text-white">
-            &gt;&gt; Aprobación Promoción
+            <div className="leading-[22px] absolute h-[22px] left-0 bottom-0 w-[338px] bg-[#1964BC] rounded-r-full text-sm pl-8 text-white">
+              &gt;&gt; Historial de Solicitudes
             </div>
           </div>
           <div className="w-full mt-4 p-6 md:px-8 bg-white">
-            <div className="4xl:flex 4xl:justify-between">
-              <div className="flex gap-4 items-center justify-center pb-2 4xl:pb-0">
-                <FormControl fullWidth style={{ width: "200px" }} size="small">
-                  <InputLabel id="demo-simple-select-label2">
-                    Familia
-                  </InputLabel>
-                  <Select
-                    labelId="demo-simple-select-label2"
-                    id="demo-simple-select"
-                    value={family}
-                    label="SOLICITANTE"
-                    onChange={handleSelect2Change}
-                  >
-                    {families.map(f => <MenuItem key={f} value={f}>{f}</MenuItem>)}
-                  </Select>
-                </FormControl>
-
-                <FormControl fullWidth style={{ width: "200px" }} size="small">
-                  <InputLabel id="demo-simple-select-label">
-                    Solicitando
-                  </InputLabel>
-                  <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    value={applicant}
-                    label="FAMILIA"
-                    onChange={handleSelect1Change}
-                  >
-                    {applicants.map(f => <MenuItem key={f} value={f}>{f}</MenuItem>)}
-                  </Select>
-                </FormControl>
-
-                <TextField
-                  className="border p-1"
-                  id="outlined-basic"
-                  label="Buscar SKU"
-                  variant="outlined"
-                  size="small"
-                  onChange={(e) => {
-                    setKeyword(e.target.value);
-                    setSkip(0);
-                  }}
-                />
+            <div className="3xl:flex 3xl:justify-between">
+              <div className="flex gap-4 3xl:py-0 py-2">
+                <div className="flex gap-4 justify-center">
+                  <FormControl fullWidth style={{ width: "200px" }} size={"small"}>
+                    <InputLabel id="demo-simple-select-label">Familia</InputLabel>
+                    <Select
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      value={family}
+                      label="Familia"
+                      onChange={handleSelect1Change}
+                    >
+                      {/* <MenuItem value={10}>Familia</MenuItem> */}
+                      {families.map(f => <MenuItem key={f} value={f}>{f}</MenuItem>)}
+                    </Select>
+                  </FormControl>
+                  <FormControl fullWidth style={{ width: "200px" }} size={"small"}>
+                    <InputLabel id="demo-simple-select-label1">
+                      Solicitante
+                    </InputLabel>
+                    <Select
+                      labelId="demo-simple-select-label1"
+                      id="demo-simple-select"
+                      value={applicant}
+                      label="Solicitante"
+                      onChange={handleSelect2Change}
+                    >
+                      {applicants.map(f => <MenuItem key={f} value={f}>{f}</MenuItem>)}
+                    </Select>
+                  </FormControl>
+                </div>
+                <div className="flex gap-4 justify-center">
+                  <TextField
+                    className="border p-1"
+                    id="outlined-basic"
+                    label="Buscar SKU"
+                    variant="outlined"
+                    size={"small"}
+                    style={{ width: "200px" }}
+                    onChange={(e) => {
+                      setKeyword(e.target.value);
+                      setSkip(0);
+                    }}
+                  />
+                  <div>
+                    {/* <Datepicker
+                      // asSingle={true}
+                      primaryColor={color}
+                      showShortcuts={true}
+                      separator={"/"}
+                      showFooter={true}
+                      popoverDirection="down"
+                      value={value}
+                      onChange={handleValueChange}
+                      classNames="bg-white-500"
+                      inputClassName="h-[40px] w-[300px] border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring focus:ring-blue-500"
+                    /> */}
+                    <DateRangePicker
+                    value={value}
+                    onChange={handleValueChange}
+                    />
+                  </div>
+                </div>
               </div>
-              <div className="flex gap-4 items-center justify-center">
-                <input type="file" ref={ref} onChange={onFileChange} hidden />
-                <button onClick={() => getRequestData(skip, keyword)} className="hover:bg-[#d1d1d1] duration-500 font-bold text-xs rounded-lg min-w-[142px] text-center bg-[#E0E0E0] px-4 py-3 items-center">ACTUALIZAR</button>
-                <button onClick={() => onImportClick()} className="font-bold duration-500 text-xs rounded-lg min-w-[142px] text-center bg-[#E0E0E0] hover:bg-[#d1d1d1] px-4 py-3 items-center">SUBIR PROMOCIONES CARGADAS</button>
-                <button onClick={() => downloadCSV(rowData)} className="font-bold duration-500 text-xs rounded-lg min-w-[142px] text-center bg-[#BAD3DE] px-4 py-3 items-center hover:bg-[#79bcca]">DESCARGAR FORMATO VISUALIZACION</button>
-                <button onClick={() => console.log("clicked")} className="font-bold duration-500 text-xs rounded-lg min-w-[142px] text-center bg-[#D4BAD8] hover:bg-[#d0a4d6] px-4 py-3 items-center">DESCARGAR FORMATO PANGUI</button>
-                {/* <Button
-                  variant="contained"
-                  sx={{
-                    backgroundColor: "#6EA7E5",
-                    color: "black",
-                    height: "57px",
-                  }}
-                  onClick={refreshComponent}
-                >
-                  ACTUALIZAR
-                </Button> */}
+              <div className="flex gap-4">
+                <button onClick={() => refreshPage()} className="hover:bg-[#d1d1d1] duration-500 font-bold text-xs rounded-lg min-w-[142px] text-center bg-[#E0E0E0] px-4 py-3 items-center">ACTUALIZAR</button>
+                <button onClick={() => downloadCSV(rowData)} className="font-bold duration-500 text-xs rounded-lg min-w-[210px] text-center bg-[#A8CFD7] px-4 py-3 items-center hover:bg-[#79bcca]">DESCARGAR RESULTADOS ENVIADOS</button>
               </div>
+
             </div>
             <div className="h-[450px] mt-4 custom-ag-grid relative custom-data-grid">
-              {/* {isLoading ? <CustomizedProgressBars /> : null} */}
               <DataGrid
                 loading={isLoading}
                 rows={rowData}
@@ -549,4 +562,4 @@ function RequestPage({ userData, onLogoutClick, setPage }) {
   );
 }
 
-export default RequestPage;
+export default HistoryPage;

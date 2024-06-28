@@ -98,7 +98,7 @@ const App = () => {
         <Route path="/promotion" element={<PromotionPage userData={user} onLogoutClick={handleLogoutClick} />} />
         <Route path="/history" element={<HistoryPage userData={user} onLogoutClick={handleLogoutClick} />} />
         <Route path="/request" element={<RequestPage userData={user} onLogoutClick={handleLogoutClick} />} />
-        <Route path="*" element={<Navigate to="/import" />} />
+        <Route path="/" element={ user.type == 1 ? <Navigate to="/promotion" /> : <Navigate to="/request" /> } />
       </Routes>
     </div>
   );

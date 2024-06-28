@@ -6,6 +6,7 @@ import React, {
   useMemo,
 } from "react";
 import { LoadingSpinner } from "./components/LoadingSpinner";
+
 import "./index.scss";
 import axios from "./connection/axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -22,8 +23,10 @@ import InputLabel from "@mui/material/InputLabel";
 import FormControl from "@mui/material/FormControl";
 import CustomizedProgressBars from './components/LoadingBar';
 import { Button } from "@mui/material";
-import Datepicker from "react-tailwindcss-datepicker";
 import { Link } from "react-router-dom";
+import Datepicker from "react-tailwindcss-datepicker";
+
+import { DateRangePicker, Stack } from 'rsuite';
 
 function HistoryPage({ userData, onLogoutClick, setPage }) {
   const [isLoading, setIsLoading] = useState(false);
@@ -46,7 +49,7 @@ function HistoryPage({ userData, onLogoutClick, setPage }) {
   };
   const [columns, setColumns] = useState([
     {
-      headerName: "IMAGEN PRODUCTO",
+      headerName: "Imagen producto",
       field: "imagen_producto",
       renderCell: (params) => {
         console.log(params)
@@ -65,21 +68,105 @@ function HistoryPage({ userData, onLogoutClick, setPage }) {
       width: 100,
     },
 
-    { headerName: "SKU SOD", field: "item_sku_num", width: 100 },
+
+    { headerName: "Sku (DV)", field: "item_sku_num", width: 100 },
     { headerName: "Descripcion", field: "item_name", width: 170 },
-    { headerName: "Familia", field: "familia", width: 170 },
-    { headerName: "Grupo", field: "subfamilia", width: 130 },
-    { headerName: "Tipo promocion", field: "tipo_promocion", width: 90 },
-    { headerName: "Tiendas aplicar", field: "TIENDAS", width: 90 },
-    { headerName: "Fecha de inicio", field: "fecha_de_inicio", width: 130 },
-    { headerName: "Fecha de fin", field: "fecha_de_termino", width: 130 },
-    { headerName: "Precio promocion", field: "precio_oferta", width: 90 },
-    { headerName: "Descuento", field: "descuento", width: 90 },
-    { headerName: "Margen", field: "margen", width: 90 },
+    {
+      field: "comprador",
+      headerName: "Comprador",
+      width: 100,
+      editable: false,
+      renderCell: (params) => (
+        <div className="w-full text-right">
+          {params.value}
+        </div>
+      )
+    },
+    {
+      field: "tipo_promocion",
+      headerName: "Tipo Promocion",
+      width: 100,
+      editable: false,
+    },
+    {
+      field: "TIENDAS",
+      headerName: "Tiendas Aplicar",
+      width: 80,
+      editable: false,
+      renderCell: (params) => (
+        <div className="w-full text-right">
+          {params.value}
+        </div>
+      )
+    },
+    {
+      field: "fecha_de_inicio",
+      headerName: "Fecha inicio",
+      width: 110,
+      editable: false,
+    },
+    {
+      field: "fecha_de_termino",
+      headerName: "Fecha fin",
+      width: 110,
+      editable: false,
+    },
+    {
+      field: "costo",
+      headerName: "Costo",
+      width: 80,
+      editable: false,
+      renderCell: (params) => (
+        <div className="w-full text-right">
+          $ {params.value}
+        </div>
+      )
+    },
+    {
+      field: "precio_minimo",
+      headerName: "Precio Minimo",
+      width: 100,
+      editable: false,
+      renderCell: (params) => (
+        <div className="w-full text-right">
+          $ {params.value}
+        </div>
+      )
+    },
+    {
+      field: "precio_oferta",
+      headerName: "Precio Promocion",
+      width: 100,
+      editable: false,
+      renderCell: (params) => (
+        <div className="w-full text-right">
+          $ {params.value}
+        </div>
+      )
+    },
+    {
+      field: "descuento",
+      headerName: "Descuento",
+      width: 80,
+      editable: false,
+      renderCell: (params) => (
+        <div className="w-full text-right">
+          {params.value}
+        </div>
+      )
+    },
+    {
+      field: "margen", headerName: "Margen", width: 80, editable: false,
+      renderCell: (params) => (
+        <div className="w-full text-right">
+          {params.value}
+        </div>
+      )
+    },
     {
       headerName: "ESTADO PRECIOS",
       field: "status",
-      width: 130,
+      width: 170,
       renderCell: params => (
         <div style={{ whiteSpace: 'pre-wrap' }}>
           <p className="break-all">
@@ -90,22 +177,24 @@ function HistoryPage({ userData, onLogoutClick, setPage }) {
         </div>
       ),
     },
-    { headerName: "Precio minimo", field: "precio_minimo", width: 90 },
+    { headerName: "Familia", field: "familia", width: 170 },
+    { headerName: "Grupo", field: "subfamilia", width: 130 },
+
     { headerName: "U/Medida", field: "unidad_medida", width: 100 },
-    { headerName: "Comprador", field: "comprador", width: 100 },
     { headerName: "Origen", field: "origen_sku", width: 100 },
     { headerName: "Formato", field: "formato_sku", width: 100 },
-    { headerName: "Precio maximo", field: "precio_maximo", width: 90 },
+    {
+      headerName: "Precio Maximo", field: "precio_maximo", width: 90,
+      renderCell: (params) => (
+        <div className="w-full text-right">
+          $ {params.value}
+        </div>
+      )
+    },
     { headerName: "EMAIL", field: "EMAIL", width: 130 },
-    // { headerName: "APROBADOS PRICING", field: "APROBADOS_PRICING", width: 130 },
-    // {
-    //   headerName: "JUSTIFICACION PROMOCION RECHAZADA",
-    //   field: "JUSTIFICACION_PROMOCION_RECHAZADA",
-    //   width: 130,
-    // },
     {
       field: "time_from_request",
-      headerName: "TIEMPO_DESDE_PRIMERA_SOLICITUD",
+      headerName: "Tiempo",
       width: 100,
       renderCell: (params) => {
         let betweenTime = parseInt(params.value) / 1000;
@@ -113,13 +202,13 @@ function HistoryPage({ userData, onLogoutClick, setPage }) {
         console.log(new Date());
         console.log(betweenTime);
         if (betweenTime > 86400) {
-          dateString = parseInt(betweenTime / 86400) + "d ago";
+          dateString = parseInt(betweenTime / 86400) + " días";
         } else if (betweenTime > 3600) {
-          dateString = parseInt(betweenTime / 3600) + "h ago";
+          dateString = parseInt(betweenTime / 3600) + " horas";
         } else if (betweenTime > 60) {
-          dateString = parseInt(betweenTime / 60) + "m ago";
+          dateString = parseInt(betweenTime / 60) + " minutos";
         } else {
-          dateString = betweenTime + "s ago";
+          dateString = parseInt(betweenTime) + " segundos";
         }
         return (
           <div>
@@ -197,9 +286,6 @@ function HistoryPage({ userData, onLogoutClick, setPage }) {
   const refreshPage = () => {
     const startDate = value.startDate.toISOString().split('T')[0];
     const endDate = value.endDate.toISOString().split('T')[0];
-    console.log(startDate, endDate);
-    setIsLoading(true);
-    // const endDate = value.endDate.toISOString().split('T')[0];
     axios
       .get("api/history-data?skip=" + skip + "&keyword=" + keyword + "&start_date=" + startDate + "&end_date=" + endDate + "&email=" + userData.email + "&user_type=" + 2 + "&family=" + family + "&applicant=" + applicant)
       .then((data) => {
@@ -209,6 +295,7 @@ function HistoryPage({ userData, onLogoutClick, setPage }) {
           margen: changePercentContent(row.margen),
           precio_oferta: Number(row.precio_oferta).toLocaleString(),
           precio_minimo: Number(row.precio_minimo).toLocaleString(),
+          costo: Number(row.costo).toLocaleString().split('.')[0],
           precio_maximo: Number(row.precio_maximo).toLocaleString(),
           precio_metropolitana: Number(row.precio_metropolitana).toLocaleString(),
           id: row.item_sku_num,
@@ -318,7 +405,7 @@ function HistoryPage({ userData, onLogoutClick, setPage }) {
               </div> */}
             </div>
           </div>
-          <div className="flex items-center text-[#247395] font-bold text-sm justify-center gap-8">
+          <div className="flex items-center text-gray-500 text-sm justify-center gap-8">
             <Link to={userData.type == 1 ? "/promotion" : "/request"} className=" flex flex-col gap-2 items-center">
               <img src={"/telegram.png"} width={20} height={20} />
               ENVÍO SOLICITUD
@@ -333,7 +420,7 @@ function HistoryPage({ userData, onLogoutClick, setPage }) {
               <div className="flex items-center justify-between mx-1 mymd:mx-[12px]">
                 <div className="text-section text-white pr-2">
                   <h2 className="font-bold mymd:text-lg text-sm">
-                    APLICATIVO DE SOLICITUD DE PROMOCIONES
+                  SOLICITUD DE PROMOCIONES Y PRECIOS
                   </h2>
                   <p className="font-light text-[12px] mymd:text-sm">
                     Realizado por Business Analytics - BI Chile
@@ -365,14 +452,14 @@ function HistoryPage({ userData, onLogoutClick, setPage }) {
                 <div className="w-0.5 h-0.5 bg-[#55C5D5]"></div>
                 <div className="w-0.5 h-0.5 bg-[#55C5D5]"></div>
               </div>
-              <div className="text-sm">
+              <div className="text-sm font-bold">
                 SEGUIMIENTO SOLICITUDES
               </div>
             </div>
           </div>
           <div className="bg-[#EFEFEF] w-full h-[22px] relative">
-            <div className="absolute h-[23px] left-0 bottom-0 w-[338px] bg-[#1964BC] rounded-r-full text-sm pl-8 text-white">
-              PREAPROBACIÓN PROMOCIÓN
+            <div className="leading-[22px] absolute h-[22px] left-0 bottom-0 w-[338px] bg-[#1964BC] rounded-r-full text-sm pl-8 text-white">
+              &gt;&gt; Historial de Solicitudes
             </div>
           </div>
           <div className="w-full mt-4 p-6 md:px-8 bg-white">

@@ -521,8 +521,9 @@ body {
 //   /* Change background color of each column cell */ 
 // }
 
-.custom-data-grid .css-yrdy0g-MuiDataGrid-columnHeaderRow {
+.custom-data-grid .MuiDataGrid-columnHeaders {
   color: white !important;
+  z-index: 8 !important;
   background-color: #6A93D0 !important;
 }
 
@@ -579,7 +580,10 @@ body {
   color: #0BA452;
 }
 
-
+.excel-error-title {
+  font-weight: bold;
+  color: #B64AB0;
+}
 
 ::-webkit-scrollbar {
   width: 12px;

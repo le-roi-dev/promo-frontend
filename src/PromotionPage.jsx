@@ -39,6 +39,8 @@ function PromotionPage({ userData, onLogoutClick, setPage }) {
   const [selectionModel, setSelectionModel] = useState([]);
   const [filter, setFilter] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
+  const [excelError, setExcelError] = useState(false);
+  const [openErrorDialog, setOpenErrorDialog] = useState(false);
   const [openRequestStatesDialog, setRequestStateDialog] = useState(false);
   const [requestStates, setRequestStates] = useState({
     success: [],
@@ -47,12 +49,15 @@ function PromotionPage({ userData, onLogoutClick, setPage }) {
   const getCellClassName = (params) => {
     const value = params.value;
 
-    if (value == "PRE-APROBADO") {
+    if (value == "APROBADO") {
       return 'greenCell'; // Apply the class for red background
     }
     if (value == "RECHAZADO") {
       return 'pinkCell'; // Apply the class for red background
     }
+  };
+  const handleErrorClose = () => {
+    setOpenErrorDialog(false);
   };
   const handleClose = () => {
     setOpenDialog(false);
@@ -67,7 +72,7 @@ function PromotionPage({ userData, onLogoutClick, setPage }) {
   const [columns, setColumns] = useState([
     {
       field: "imagen_producto",
-      headerName: "IMAGEN PRODUCTO",
+      headerName: "Imagen producto",
       renderCell: (params) => (
         <div className="flex justify-center w-full">
           <img
@@ -82,7 +87,7 @@ function PromotionPage({ userData, onLogoutClick, setPage }) {
     },
     {
       field: "item_sku_num",
-      headerName: "SKU SOD",
+      headerName: "Sku (DV)",
       width: 100,
       editable: false,
     },
@@ -92,74 +97,119 @@ function PromotionPage({ userData, onLogoutClick, setPage }) {
       width: 170,
       editable: false,
     },
-    { field: "familia", headerName: "Familia", width: 150, editable: false },
-    { field: "subfamilia", headerName: "Grupo", width: 120, editable: false },
+    {
+      field: "comprador",
+      headerName: "Comprador",
+      width: 100,
+      editable: false,
+      renderCell: (params) => (
+        <div className="w-full text-right">
+            {params.value}
+        </div>
+      )
+    },
     {
       field: "tipo_promocion",
-      headerName: "Tipo promocion",
+      headerName: "Tipo Promocion",
       width: 100,
       editable: false,
     },
     {
       field: "TIENDAS",
-      headerName: "Tiendas aplicar",
-      width: 100,
+      headerName: "Tiendas Aplicar",
+      width: 80,
       editable: false,
+      renderCell: (params) => (
+        <div className="w-full text-right">
+            {params.value}
+        </div>
+      )
     },
     {
       field: "fecha_de_inicio",
-      headerName: "Fecha de inicio",
-      width: 130,
+      headerName: "Fecha inicio",
+      width: 110,
       editable: false,
     },
     {
       field: "fecha_de_termino",
-      headerName: "Fecha de fin",
-      width: 130,
+      headerName: "Fecha fin",
+      width: 110,
       editable: false,
     },
     {
-      field: "precio_oferta",
-      headerName: "Precio promocion",
+      field: "costo",
+      headerName: "Costo",
       width: 100,
       editable: false,
+      renderCell: (params) => (
+        <div className="w-full text-right">
+            {Number(params.value).toLocaleString().split('.')[0]}
+        </div>
+      )
+    },
+    {
+      field: "precio_minimo",
+      headerName: "Precio Minimo",
+      width: 100,
+      editable: false,
+      renderCell: (params) => (
+        <div className="w-full text-right">
+            $ {Number(params.value).toLocaleString()}
+        </div>
+      )
+    },
+    {
+      field: "precio_oferta",
+      headerName: "Precio Promocion",
+      width: 100,
+      editable: false,
+      renderCell: (params) => (
+        <div className="w-full text-right">
+            $ {Number(params.value).toLocaleString()}
+        </div>
+      )
     },
     {
       field: "descuento",
       headerName: "Descuento",
-      width: 100,
+      width: 80,
       editable: false,
+      renderCell: (params) => (
+        <div className="w-full text-right">
+            {changePercentContent(params.value)}
+        </div>
+      )
     },
-    { field: "margen", headerName: "Margen", width: 100, editable: false }, {
+    { field: "margen", headerName: "Margen", width: 80, editable: false,
+      renderCell: (params) => (
+        <div className="w-full text-right">
+            {changePercentContent(params.value)}
+        </div>
+      )
+    }, 
+    {
       field: "aprobacion",
-      headerName: "Pre aprobacion",
+      headerName: "Aprobacion",
       width: 150,
       editable: false,
     },
     {
       field: "motivo_aprobacion",
       headerName: "Motivo Rechazo",
-      width: 100,
+      width: 130,
       editable: false,
     },
-    {
-      field: "precio_minimo",
-      headerName: "Precio minimo",
-      width: 100,
-      editable: false,
-    },
+    { field: "familia", headerName: "Familia", width: 150, editable: false },
+    { field: "subfamilia", headerName: "Grupo", width: 120, editable: false },
+
     {
       field: "unidad_medida",
       headerName: "U/Medida",
       width: 100,
       editable: false,
     },
-    {
-      field: "comprador",
-      headerName: "Comprador",
-      width: 100,
-      editable: false,
-    },
+
     { field: "origen_sku", headerName: "Origen", width: 100, editable: false },
     {
       field: "formato_sku",
@@ -169,15 +219,25 @@ function PromotionPage({ userData, onLogoutClick, setPage }) {
     },
     {
       field: "precio_maximo",
-      headerName: "Precio maximo",
+      headerName: "Precio Maximo",
       width: 90,
       editable: false,
+      renderCell: (params) => (
+        <div className="w-full text-right">
+            $ {Number(params.value).toLocaleString()}
+        </div>
+      )
     },
     {
       field: "precio_metropolitana",
       headerName: "Precio RM",
-      width: 130,
+      width: 80,
       editable: false,
+      renderCell: (params) => (
+        <div className="w-full text-right">
+            $ {Number(params.value).toLocaleString()}
+        </div>
+      )
     },
   ].map(col => {
     const updatedCol = {
@@ -252,17 +312,11 @@ function PromotionPage({ userData, onLogoutClick, setPage }) {
       .then((data) => {
         const newRowData = data.response.data.map((row) => ({
           ...row,
-          descuento: changePercentContent(row.descuento),
-          margen: changePercentContent(row.margen),
-          precio_oferta: Number(row.precio_oferta).toLocaleString(),
-          precio_minimo: Number(row.precio_minimo).toLocaleString(),
-          precio_maximo: Number(row.precio_maximo).toLocaleString(),
-          precio_metropolitana: Number(row.precio_metropolitana).toLocaleString(),
           id: row.item_sku_num,
         }));
 
         if (skip === 0) setRowData(newRowData);
-        else setRowData((prevRowData) => [...prevRowData, ...newRowData]);
+        else setRowData((prevRowData) => -[...prevRowData, ...newRowData]);
 
         if (data.response.data.length === 10) {
           setSkip(skip + 10);
@@ -276,7 +330,7 @@ function PromotionPage({ userData, onLogoutClick, setPage }) {
   useEffect(() => {
     if (filter == true) {
       const updatedColumns = columns.map((column, index) => {
-        if (index !== 9) {
+        if (index !== 10) {
           return column; // Keep the first column as it is
         }
         return { ...column, editable: true }; // Set 'editable' to true for all other columns
@@ -344,8 +398,13 @@ function PromotionPage({ userData, onLogoutClick, setPage }) {
       })
       .then((data) => {
         // setPage("promotion");
-        setIsImportLoading(false);
-        setOpenDialog(true);
+          setIsImportLoading(false);
+        if (data.error) {
+          setExcelError(data.error);
+          setOpenErrorDialog(true);
+        } else if (data.status == "success"){
+          setOpenDialog(true);
+        }
       })
       .catch((err) => {
         console.log(err);
@@ -359,7 +418,7 @@ function PromotionPage({ userData, onLogoutClick, setPage }) {
   const handleSelectAceptados = (event) => {
     if (event.target.checked) {
       const selectedIds = rowData
-        .filter((row) => row.aprobacion === "PRE-APROBADO")
+        .filter((row) => row.aprobacion === "APROBADO")
         .map((row) => row.id);
       setSelectionModel(selectedIds);
     } else {
@@ -452,7 +511,7 @@ function PromotionPage({ userData, onLogoutClick, setPage }) {
               </div> */}
             </div>
           </div>
-          <div className="flex items-center text-[#247395] font-bold text-sm justify-center gap-8">
+          <div className="flex items-center text-gray-500 text-sm justify-center gap-8">
             <div className="border-b-4 border-[#0066FF] flex flex-col gap-2 items-center text-[#0066FF]">
               <img src={"/telegram-promotion.png"} width={20} height={20} color="#0066FF" />
               ENVÍO SOLICITUD
@@ -467,7 +526,7 @@ function PromotionPage({ userData, onLogoutClick, setPage }) {
               <div className="flex items-center justify-between mx-1 mymd:mx-[12px]">
                 <div className="text-section text-white pr-2">
                   <h2 className="font-bold mymd:text-lg text-sm">
-                    APLICATIVO DE SOLICITUD DE PROMOCIONES
+                    SOLICITUD DE PROMOCIONES Y PRECIOS
                   </h2>
                   <p className="font-light text-[12px] mymd:text-sm">
                     Realizado por Business Analytics - BI Chile
@@ -500,7 +559,7 @@ function PromotionPage({ userData, onLogoutClick, setPage }) {
                 <div className="w-0.5 h-0.5 bg-[#55C5D5]"></div>
                 <div className="w-0.5 h-0.5 bg-[#55C5D5]"></div>
               </div>
-              <div className="text-sm">
+              <div className="text-sm font-bold">
                 SEGUIMIENTO SOLICITUDES
               </div>
             </div>
@@ -554,12 +613,12 @@ function PromotionPage({ userData, onLogoutClick, setPage }) {
             </div>
           </div>
           <div className="bg-[#EFEFEF] w-full h-[22px] mt-10 relative">
-            <div className="absolute h-[23px] left-0 bottom-0 w-[338px] bg-[#1964BC] rounded-r-full text-sm pl-8 text-white">
-              &gt;&gt; PREAPROBACIÓN PROMOCIÓN
+            <div className="leading-[22px] absolute h-[22px] left-0 bottom-0 w-[338px] bg-[#1964BC] rounded-r-full text-sm pl-8 text-white">
+              &gt;&gt; Preaprobación Promoción
             </div>
           </div>
           <div className="3xl:flex 3xl:justify-between mt-10 px-8">
-            <div className="flex justify-center items-center gap-14">
+            <div className="flex justify-center items-center gap-7">
               <div className="w-[200px]">
                 <TextField
                   id="outlined-search"
@@ -582,7 +641,7 @@ function PromotionPage({ userData, onLogoutClick, setPage }) {
                     label="Estado"
                     onChange={handleChangeEstado}
                   >
-                    <MenuItem value="PRE-APROBADO">Seleccionar Aceptados</MenuItem>
+                    <MenuItem value="APROBADO">Seleccionar Aceptados</MenuItem>
                     <MenuItem value="RECHAZADO">Seleccionar Rechazados</MenuItem>
                   </Select>
                 </FormControl>
@@ -593,9 +652,9 @@ function PromotionPage({ userData, onLogoutClick, setPage }) {
               <button onClick={() => getPromotionData(skip, keyword)} className="hover:bg-[#d1d1d1] duration-500 font-bold text-xs rounded-lg min-w-[142px] text-center bg-[#E0E0E0] px-4 py-3 items-center">ACTUALIZAR</button>
               <button onClick={() => navigate("/history")} className="hover:bg-[#d1d1d1] font-bold duration-500 text-xs rounded-lg min-w-[142px] text-center bg-[#E0E0E0] px-4 py-3 items-center">VER RESULTADOS</button>
               <button onClick={() => setFilter(!filter)} className="hover:bg-[#d1d1d1] font-bold text-xs duration-500 rounded-lg min-w-[142px] text-center bg-[#E0E0E0] px-4 py-3 items-center">EDITAR</button>
-              <button onClick={() => handleRejectExportClick()} className="font-bold duration-500 text-xs rounded-lg min-w-[210px] text-center bg-[#D4BAD8] hover:bg-[#d0a4d6] px-4 py-3 items-center">DESCARGAR RECHADOS</button>
+              <button onClick={() => handleRejectExportClick()} className="font-bold duration-500 text-xs rounded-lg min-w-[142px] text-center bg-[#D4BAD8] hover:bg-[#d0a4d6] px-4 py-3 items-center">DESCARGAR</button>
               {/* <button onClick={() => navigate("/request")} className="font-bold text-xs rounded-lg min-w-[210px] text-center bg-[#A8CFD7] px-4 py-3 items-center">ENVIAR SOLICITUD APROBADOS</button> */}
-              <button onClick={() => submitRequest()} className="font-bold text-xs duration-500 rounded-lg min-w-[210px] text-center bg-[#A8CFD7] hover:bg-[#79bcca] px-4 py-3 items-center">ENVIAR SOLICITUD APROBADOS</button>
+              <button onClick={() => submitRequest()} className="font-bold text-xs duration-500 rounded-lg min-w-[142px] text-center bg-[#A8CFD7] hover:bg-[#79bcca] px-4 py-3 items-center">ENVIAR</button>
             </div>
           </div>
           <Box className="w-full px-8 py-6 bg-white relative">
@@ -635,6 +694,23 @@ function PromotionPage({ userData, onLogoutClick, setPage }) {
         </Box>
 
       </Box>
+
+      <Dialog
+        open={openErrorDialog}
+        onClose={handleErrorClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title" className="excel-error-title">
+          Error Found
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            {excelError}
+          </DialogContentText>
+        </DialogContent>
+      </Dialog>
+
       <Dialog
         open={openDialog}
         onClose={handleClose}
